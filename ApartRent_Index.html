@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>ApartRent Map</title>
+    <link href="https://fonts.googleapis.com/css2?family=Lobster&family=Bangers&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.7.1/dist/leaflet.css" />
+    <script src="https://unpkg.com/leaflet@1.7.1/dist/leaflet.js"></script>
+    <style>
+        body {
+            background-color: #6a5acd; /* Purple background */
+            color: white;
+            font-family: Arial, sans-serif;
+            text-align: center;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            height: 100vh;
+        }
+
+        #app-title {
+            font-size: 5rem;
+            margin-bottom: 10px;
+            font-family: 'Lobster', cursive; /* Lobster font for the title */
+        }
+
+        #city-selector {
+            width: fit-content;
+            font-size: 1.5rem;
+            padding: 10px;
+            margin-bottom: 20px;
+            margin-right: 10px;
+            font-family: 'Bangers', cursive; /* Bangers font for the buttons */
+        }
+
+        .unit-button {
+            font-size: 1.2rem;
+            padding: 10px 20px;
+            margin: 10px;
+            background-color: #8a2be2; /* Darker purple */
+            border: none;
+            color: white;
+            border-radius: 5px;
+            cursor: pointer;
+            font-family: 'Bangers', cursive; /* Bangers font for the buttons */
+        }
+
+        .unit-button:hover {
+            background-color: #9b30ff; /* Lighter purple */
+        }
+
+        #map {
+            width: 80%;
+            height: 400px;
+            margin: 20px auto;
+            background-color: #ffffff;
+            color: #000000;
+            display: none; /* Hidden by default */
+        }
+    </style>
+</head>
+<body>
+    <div id="app-title">ApartRent Map</div>
+
+    <div id="menu">
+        <select id="city-selector">
+            <option value="houston">Houston</option>
+            <option value="austin">Austin</option>
+            <option value="dallas">Dallas</option>
+        </select>
+    </div>
+
+    <div id="unit-buttons">
+        <button class="unit-button" data-unit="studio">Studio</button>
+        <button class="unit-button" data-unit="one-bed">One Bed</button>
+        <button class="unit-button" data-unit="two-bed">Two Bed</button>
+    </div>
+
+    <div id="map">
+        <!-- Map will be displayed here -->
+    </div>
+
+    <script>
+        document.querySelectorAll('.unit-button').forEach(button => {
+    button.addEventListener('click', function() {
+        var selectedCity = document.getElementById('city-selector').value;
+        var mapElement = document.getElementById('map');
+        mapElement.style.display = 'block';
+
+        // Define city coordinates
+        var cityCoordinates = {
+            'houston': [29.7604, -95.3698],
+            'austin': [30.2672, -97.7431],
+            'dallas': [32.7767, -96.7970]
+        };
+
+        // Initialize the map
+        var map = L.map('map').setView(cityCoordinates[selectedCity], 13);
+
+        // Add OpenStreetMap tiles
+        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+            maxZoom: 19,
+            attribution: '© OpenStreetMap contributors'
+        }).addTo(map);
+    });
+});
+
+    </script>
+</body>
+</html>
+
