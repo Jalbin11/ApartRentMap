@@ -12,6 +12,8 @@ Open `index.html` in your web browser.
 ## Contributing
 Contributions to this project are welcome. Please fork the repository and open a pull request with your changes.
 
+Author: Jalbin11
+
 ## License
 [MIT License](LICENSE.md)
 
