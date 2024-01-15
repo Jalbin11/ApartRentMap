@@ -80,33 +80,37 @@
     <div id="map">
         <!-- Map will be displayed here -->
     </div>
-
+    
     <script>
+        var map = null; // Global variable to hold the map instance
+
         document.querySelectorAll('.unit-button').forEach(button => {
-    button.addEventListener('click', function() {
-        var selectedCity = document.getElementById('city-selector').value;
-        var mapElement = document.getElementById('map');
-        mapElement.style.display = 'block';
+            button.addEventListener('click', function() {
+                var selectedCity = document.getElementById('city-selector').value;
+                var mapElement = document.getElementById('map');
+                mapElement.style.display = 'block';
+           
+                var cityCoordinates = {
+                    'houston': [29.7604, -95.3698],
+                    'austin': [30.2672, -97.7431],
+                    'dallas': [32.7767, -96.7970]
+                };
 
-        // Define city coordinates
-        var cityCoordinates = {
-            'houston': [29.7604, -95.3698],
-            'austin': [30.2672, -97.7431],
-            'dallas': [32.7767, -96.7970]
-        };
-
-        // Initialize the map
-        var map = L.map('map').setView(cityCoordinates[selectedCity], 13);
-
-        // Add OpenStreetMap tiles
-        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-            maxZoom: 19,
-            attribution: '© OpenStreetMap contributors'
-        }).addTo(map);
-    });
-});
-
+                if (map) {
+                    // Map already exists, just update its center
+                    map.setView(cityCoordinates[selectedCity], 13);
+                } else {
+                    // Initialize the map for the first time
+                    map = L.map('map').setView(cityCoordinates[selectedCity], 13);
+                    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+                        maxZoom: 19,
+                        attribution: '© OpenStreetMap contributors'
+                    }).addTo(map);
+                }
+                
+            });
+        });
+            
     </script>
 </body>
 </html>
-
