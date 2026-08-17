@@ -1,0 +1,44 @@
+name: CI
+on:
+  pull_request:
+    paths-ignore: ['**.md', 'docs/**']
+  push:
+    branches: [main]
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+jobs:
+  check:
+    if: github.event.pull_request.draft == false
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v6
+        with:
+          fetch-depth: 1
+      - name: HTML parses
+        run: |
+          python3 - <<'PY'
+          import glob, sys
+          from html.parser import HTMLParser
+          bad = []
+          for f in glob.glob('**/*.html', recursive=True):
+              try:
+                  HTMLParser().feed(open(f, encoding='utf-8').read())
+              except Exception as e:
+                  bad.append((f, e))
+          for f, e in bad:
+              print(f"::error file={f}::{e}")
+          print(f"checked {len(glob.glob('**/*.html', recursive=True))} html file(s)")
+          sys.exit(1 if bad else 0)
+          PY
+      - name: Node checks (activate once the app has a package.json)
+        run: |
+          if [ -f package.json ]; then
+            npm ci --prefer-offline --no-audit --fund=false
+            npm run --if-present typecheck
+            npm run --if-present lint
+            npm run --if-present test
+          else
+            echo "No package.json yet - skipping Node checks."
+          fi
