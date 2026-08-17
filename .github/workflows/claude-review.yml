@@ -9,12 +9,14 @@ jobs:
   review:
     if: github.event.pull_request.draft == false
     runs-on: ubuntu-latest
-    timeout-minutes: 10
+    timeout-minutes: 15
     permissions:
       contents: read
-      pull-requests: read
-      issues: read
+      # write, not read: the reviewer has to POST its findings back to the PR.
+      pull-requests: write
+      issues: write
       id-token: write
+      actions: read
     steps:
       - uses: actions/checkout@v6
         with:
@@ -22,8 +24,18 @@ jobs:
       - uses: anthropics/claude-code-action@v1
         with:
           claude_code_oauth_token: ${{ secrets.CLAUDE_CODE_OAUTH_TOKEN }}
+          # Bot-authored PRs are rejected by default; without this, every agent PR
+          # goes unreviewed.
           allowed_bots: "*"
           plugin_marketplaces: "https://github.com/anthropics/claude-code.git"
           plugins: "code-review@claude-code-plugins"
           prompt: "/code-review:code-review --comment ${{ github.repository }}/pull/${{ github.event.pull_request.number }}"
-          claude_args: '--allowedTools "mcp__github_inline_comment__create_inline_comment" --max-turns 30'
+          # allowedTools is an ALLOWLIST. Naming only the inline-comment tool caused
+          # permission denials on a real 30-file PR (run 31994177632: 11 turns,
+          # is_error=false, permission_denials_count=2, zero comments posted) — the
+          # review happened and then could not report. Grant the summary-comment tool
+          # and the read tools a reviewer actually needs.
+          claude_args: >-
+            --allowedTools
+            "mcp__github_inline_comment__create_inline_comment,mcp__github_comment__update_claude_comment,Read,Grep,Glob"
+            --max-turns 40
