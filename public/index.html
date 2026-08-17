@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>ApartRentMap</title>
+  <link rel="stylesheet" href="/vendor/leaflet.css" />
+  <link rel="stylesheet" href="/style.css" />
+</head>
+<body>
+  <div id="app-title">ApartRentMap</div>
+  <p id="app-subtitle">Open-source rent heatmap, built on free public data.</p>
+
+  <div id="menu">
+    <select id="city-selector" aria-label="City"></select>
+    <div id="unit-buttons">
+      <button class="unit-button" data-unit="studio">Studio</button>
+      <button class="unit-button" data-unit="one-bed">One Bed</button>
+      <button class="unit-button" data-unit="two-bed">Two Bed</button>
+    </div>
+  </div>
+
+  <div id="status" role="status"></div>
+  <div id="map"></div>
+  <div id="legend"></div>
+
+  <footer>
+    <a href="https://github.com/Jalbin11/ApartRentMap" target="_blank" rel="noopener">Source on GitHub</a>
+    · Data: <a href="https://www.census.gov/data/developers/data-sets/acs-5year.html" target="_blank" rel="noopener">Census ACS</a>
+    · Map: <a href="https://leafletjs.com" target="_blank" rel="noopener">Leaflet</a>
+  </footer>
+
+  <script src="/vendor/leaflet.js"></script>
+  <script src="/vendor/leaflet-heat.js"></script>
+  <script src="/heatmap.js"></script>
+</body>
+</html>
