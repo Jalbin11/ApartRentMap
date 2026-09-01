@@ -1,0 +1,33 @@
+name = "apartrentmap"
+main = "src/index.js"
+compatibility_date = "2024-09-23"
+
+# Static frontend served straight from the Worker — one `wrangler deploy`
+# ships both the API and the site. Free (Workers Static Assets).
+[assets]
+directory = "./public"
+binding = "ASSETS"
+
+# Free tier: 5GB storage, generous daily read/write allowance.
+# `database_id` is a placeholder — replace after `wrangler d1 create apartrentmap-db`.
+[[d1_databases]]
+binding = "DB"
+database_name = "apartrentmap-db"
+database_id = "REPLACE_WITH_YOUR_D1_DATABASE_ID"
+
+# Free tier. Used only for the rate-limit fixed-window counters (short TTL).
+# Replace after `wrangler kv namespace create RATE_LIMIT_KV`.
+[[kv_namespaces]]
+binding = "RATE_LIMIT_KV"
+id = "REPLACE_WITH_YOUR_KV_NAMESPACE_ID"
+
+# Daily refresh — the only place any external API is ever called.
+# Adjust to match how often Census ACS / HUD FMR actually publish updates
+# (ACS is annual, HUD FMR is annual-ish) — daily is a safe, still-free upper
+# bound, not a requirement to run that often.
+[triggers]
+crons = ["0 8 * * *"]
+
+# Set with `wrangler secret put CENSUS_API_KEY` / `wrangler secret put HUD_API_TOKEN`.
+# Both are free to obtain (see src/dataSources/*.js for registration links).
+# HUD_API_TOKEN is optional — the refresh job skips HUD entirely if unset.

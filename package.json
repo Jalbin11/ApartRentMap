@@ -1,0 +1,24 @@
+{
+  "name": "apartrentmap",
+  "version": "2.0.0-mvp",
+  "description": "Open-source, API-driven apartment rent heatmap. Free-tier Cloudflare Workers + D1, free government rent data (Census ACS, HUD FMR).",
+  "type": "module",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Jalbin11/apartrentmap.git"
+  },
+  "bugs": {
+    "url": "https://github.com/Jalbin11/apartrentmap/issues"
+  },
+  "homepage": "https://github.com/Jalbin11/apartrentmap#readme",
+  "scripts": {
+    "dev": "wrangler dev",
+    "test": "node --test",
+    "seed:fixture": "node scripts/seed-fixture.mjs",
+    "db:migrate:local": "wrangler d1 execute apartrentmap-db --local --file=db/schema.sql"
+  },
+  "devDependencies": {
+    "wrangler": "^3.78.0"
+  }
+}
