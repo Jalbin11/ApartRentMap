@@ -16,6 +16,7 @@
     "dev": "wrangler dev",
     "test": "node --test",
     "seed:fixture": "node scripts/seed-fixture.mjs",
+    "verify:sources": "node scripts/verify-sources.mjs",
     "db:migrate:local": "wrangler d1 execute apartrentmap-db --local --file=db/schema.sql"
   },
   "devDependencies": {
