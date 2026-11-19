@@ -47,15 +47,31 @@ can't turn into a surprise bill.
   `HUD_API_TOKEN` isn't set — Census alone is enough to run.
 
 Both clients (`src/dataSources/census.js`, `src/dataSources/hud.js`) are
-written from the documented API contracts, **not yet verified against the
-live endpoints** — this sandbox's network policy blocks outbound requests to
-arbitrary hosts, so I could only unit-test the parsing logic against fixture
-responses (`test/dataSources.test.js`), not the live HTTP calls. Cloudflare
-Workers have normal outbound internet once deployed. Before relying on this
-in production: run the refresh job once (locally with real API keys, or via
-`wrangler dev --test-scheduled`) and confirm real data lands in D1 — double
-check the HUD response shape in particular against current docs, since that's
-the piece I'm least sure of.
+written from the documented API contracts and unit-tested against fixture
+responses (`test/dataSources.test.js`, `test/refresh.test.js`). They have
+**not yet been run against the live endpoints**, because the sandbox that
+wrote them can't reach either host. Cloudflare Workers have normal outbound
+internet once deployed.
+
+**Check them live in one command** before the first deploy, from any machine
+with normal internet (nothing is written anywhere):
+
+```bash
+CENSUS_API_KEY=... HUD_API_TOKEN=... npm run verify:sources
+```
+
+It runs the exact client code the refresh job uses and prints `OK`/`FAIL` per
+city, with sample rows. Both variables are optional: Census works keyless at
+low volume, and HUD is reported as `SKIPPED` without a token. With a HUD token
+it also checks each city's `hudEntityId` (in `src/lib/cities.js`) against
+HUD's own metro list and suggests the right code if one is wrong. Exit code 1
+means at least one source returned nothing or errored.
+
+How HUD is queried: its `fmr/data/{id}` endpoint takes a **metro or county
+entity ID** (e.g. `METRO12420M12420`), not a ZIP, so the refresh job makes one
+call per city and picks our ZIPs out of the metro's Small Area FMR list. A
+metro that only publishes metro-wide FMRs is skipped and reported, rather than
+painting one number over every ZIP.
 
 ## Local development
 
@@ -89,7 +105,9 @@ npm test
    wrangler secret put HUD_API_TOKEN   # optional
    ```
 4. `wrangler deploy`
-5. Trigger the first refresh manually (don't wait for the daily cron) via the
+5. Run `npm run verify:sources` with the same keys (see [Data sources](#data-sources))
+   and fix anything it marks `FAIL`.
+6. Trigger the first refresh manually (don't wait for the daily cron) via the
    Cloudflare dashboard's "Trigger Cron" button, or `wrangler dev --test-scheduled`
    locally with real keys, so D1 has real data before anyone visits.
 
@@ -102,8 +120,8 @@ generate a bill regardless of traffic.
 
 ## Adding a new metro
 
-Add an entry to `src/lib/cities.js` with the city's ZIPs and approximate
-centroids — that's it. The refresh job, API, and frontend all read from that
+Add an entry to `src/lib/cities.js` with the city's ZIPs, approximate
+centroids and (optionally) its HUD `hudEntityId` — that's it. The refresh job, API, and frontend all read from that
 one config; no other code changes needed. (Current ZIP centroids are
 hand-picked approximations, good enough for a heatmap; swapping in Census
 Gazetteer ZCTA centroid files — also free — would make them exact.)

@@ -14,8 +14,8 @@
 // written from the documented API contract but has NOT been exercised
 // against the live endpoint from this environment. Cloudflare Workers have
 // normal outbound internet once deployed, so verify this end-to-end on
-// first real deploy (or by running `node scripts/verify-census.mjs` — see
-// scripts/ — from a machine with normal internet access).
+// first real deploy (or by running `npm run verify:sources` — see
+// scripts/verify-sources.mjs — from a machine with normal internet access).
 
 const ACS_YEAR = '2022'; // most recent 5-year ACS vintage at time of writing
 const VARS = ['B25031_002E', 'B25031_003E', 'B25031_004E'];

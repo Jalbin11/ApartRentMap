@@ -2,6 +2,9 @@
 // enough for a heatmap MVP. For a more accurate future pass, swap these for
 // Census Gazetteer ZCTA centroid files (also free) instead of hand-picked values.
 //
+// `hudEntityId` is the HUD Fair Market Rents metro code for that city. It is
+// optional: a city without one simply gets no HUD enrichment (Census still runs).
+//
 // Adding a new metro: add a new entry here — everything else (refresh worker,
 // API, frontend) reads from this config, no other code changes needed. That's
 // what "open source, self-hostable against a different metro" means in practice.
@@ -9,6 +12,9 @@
 export const CITIES = {
   austin: {
     label: 'Austin, TX',
+    // HUD FMR metro entity ID (fmr/data/{entityid}). Unverified from the
+    // sandbox: confirm with `npm run verify:sources` (it lists HUD's metros).
+    hudEntityId: 'METRO12420M12420', // Austin-Round Rock-San Marcos, TX MSA
     center: [30.2672, -97.7431],
     zoom: 11,
     zips: [
@@ -22,6 +28,7 @@ export const CITIES = {
   },
   houston: {
     label: 'Houston, TX',
+    hudEntityId: 'METRO26420M26420', // Houston-The Woodlands-Sugar Land, TX HUD Metro FMR Area
     center: [29.7604, -95.3698],
     zoom: 10,
     zips: [
@@ -35,6 +42,7 @@ export const CITIES = {
   },
   dallas: {
     label: 'Dallas, TX',
+    hudEntityId: 'METRO19100M19100', // Dallas, TX HUD Metro FMR Area
     center: [32.7767, -96.7970],
     zoom: 11,
     zips: [
